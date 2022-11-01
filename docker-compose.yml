@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    container_name: simple-sql_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - simple-sql_db:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - simple-sql_network
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: simple-sql_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - simple-sql_pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - simple-sql_network
+    depends_on:
+      - db
+    restart: unless-stopped
+
+networks:
+  simple-sql_network:
+    driver: bridge
+
+volumes:
+  simple-sql_db:
+  simple-sql_pgadmin:
